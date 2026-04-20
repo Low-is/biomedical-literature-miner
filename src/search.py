@@ -3,12 +3,14 @@ from Bio import Entrez
 Entrez.email = "randolphl@uthscsa.edu"
 
 def run_search(search_term):
+    search_cfg = config["search"]
+    
     handle = Entrez.esearch(
-        db="gds",
-        term=search_term,
-        retmax=500,
+        db=search_cfg["database"],
+        term=search_cfg["query"],
+        retmax=search_cfg["retmax"],
         datetype="pdat",
-        reldate=7   # last 7 days
+        reldate=search_cfg["reldate"]
     )
     record = Entrez.read(handle)
     handle.close()
@@ -16,7 +18,10 @@ def run_search(search_term):
     gse_ids = record["IdList"]
 
     # Fetch summaries
-    handle = Entrez.esummary(db="gds", id=",".join(gse_ids))
+    handle = Entrez.esummary(
+        db=search_cfg["database"],
+        id=",".join(gse_ids)
+    )
     summaries = Entrez.read(handle)
     handle.close()
 
