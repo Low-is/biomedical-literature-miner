@@ -1,8 +1,10 @@
 from Bio import Entrez
 
-Entrez.email = "randolphl@uthscsa.edu"
+def run_search(config):
 
-def run_search(search_term):
+    # GLOABL SETTINGS
+    Entrez.email = config["email"]
+    
     search_cfg = config["search"]
     
     handle = Entrez.esearch(
