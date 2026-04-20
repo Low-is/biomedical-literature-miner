@@ -22,7 +22,10 @@ def run_search(config):
     record = Entrez.read(handle)
     handle.close()
 
-    gse_ids = record["IdList"]
+    gse_ids = record.get("IdList", [])
+
+    if not gse_ids:
+        return []
 
     # =========================
     # FETCH SUMMARIES
