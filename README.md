@@ -14,4 +14,19 @@ cd biomedical-literature-miner
 # Bash
 
 python -m venv venv
-source venv/
+source venv/Scripts/activate # Git Bash command
+```
+
+## Install Dependencies
+```
+# Bash
+
+pip install -r requirements.txt
+```
+
+## Run Literature Search Pipeline
+```
+# Bash
+
+python main.py
+```
