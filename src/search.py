@@ -2,11 +2,16 @@ from Bio import Entrez
 
 def run_search(config):
 
-    # GLOABL SETTINGS
+    # =========================
+    # GLOBAL SETTINGS
+    # =========================
     Entrez.email = config["email"]
     
     search_cfg = config["search"]
-    
+
+    # =========================
+    # SEARCH GEO DATASETS
+    # =========================
     handle = Entrez.esearch(
         db=search_cfg["database"],
         term=search_cfg["query"],
@@ -19,7 +24,9 @@ def run_search(config):
 
     gse_ids = record["IdList"]
 
-    # Fetch summaries
+    # =========================
+    # FETCH SUMMARIES
+    # =========================
     handle = Entrez.esummary(
         db=search_cfg["database"],
         id=",".join(gse_ids)
@@ -27,6 +34,10 @@ def run_search(config):
     summaries = Entrez.read(handle)
     handle.close()
 
+
+    # =========================
+    # PARSE RESULTS
+    # =========================
     gse_list = []
 
     if isinstance(summaries, dict) and "DocumentSummarySet" in summaries:
