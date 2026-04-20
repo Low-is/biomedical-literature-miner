@@ -17,7 +17,7 @@ def main():
     # -----------------------
     print("🔍 Running weekly GEO search...")
 
-    current_ids = run_search(search_term)
+    current_ids = run_search(config)
     
     seen_ids = load_seen_ids()
     new_ids = get_new_ids(current_ids, seen_ids)
