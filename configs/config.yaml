@@ -1,0 +1,10 @@
+search:
+  database: "gds"
+  retmax: 500
+  reldate: 7   # last N days
+
+  query: >
+    (bronchopulmonary dysplasia OR BPD) AND
+    (RNA-seq OR RNAseq OR microarray OR "gene expression profiling") AND
+    (Homo sapiens[Organism]) AND
+    (neonate OR newborn OR infant OR preterm)
