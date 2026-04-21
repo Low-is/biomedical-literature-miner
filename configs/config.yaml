@@ -1,12 +1,17 @@
 email: "randolphl@uthscsa.edu"
 
-search:
-  database: "gds"
-  retmax: 500
-  reldate: 730   # last N days
-
+archive_search:
+  reldate: 99999  
   query: >
     (bronchopulmonary dysplasia OR BPD) AND
     (RNA-seq OR RNAseq OR microarray OR "gene expression profiling") AND
-    (Homo sapiens[Organism]) AND
+    Homo sapiens[Organism] AND
+    (neonate OR newborn OR infant OR preterm)
+
+weekly_search:
+  reldate: 730
+  query: >
+    (bronchopulmonary dysplasia OR BPD) AND
+    (RNA-seq OR RNAseq OR microarray OR "gene expression profiling") AND
+    Homo sapiens[Organism] AND
     (neonate OR newborn OR infant OR preterm)
