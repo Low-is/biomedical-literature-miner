@@ -44,14 +44,34 @@ def main():
     # -----------------------
     # RUN BOTH MODES
     # -----------------------
-
     archive_ids = run_archive_pipeline(config)
     weekly_ids = run_weekly_pipeline(config)
 
-    # Optional sanity check
+    # -----------------------
+    # COMBINE EVERYTHING
+    # -----------------------
+    all_current_ids = archive_ids.union(weekly_ids)
+    seen_ids = load_seen_ids()
+
+    final_ids = seen_ids.union(all_current_ids)
+
+    # -----------------------
+    # SAVE BOTH OUTPUTS
+    # -----------------------
+    save_seen_ids(final_ids)
+    save_weekly_report(final_ids)
+
+    # -----------------------
+    # SUMMARY
+    # -----------------------
+    new_ids = final_ids - seen_ids
+
     print("\n✔ Pipeline complete")
-    print(f"Archive total: {len(archive_ids)}")
-    print(f"Weekly snapshot: {len(weekly_ids)}")
+    print(f"Total archive size: {len(final_ids)}")
+    print(f"New datasets this run: {len(new_ids)}")
+
+    for gse in new_ids:
+        print(f"https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc={gse}")
 
 
 if __name__ == "__main__":
