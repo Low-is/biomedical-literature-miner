@@ -1,6 +1,8 @@
 email: "randolphl@uthscsa.edu"
 
 archive_search:
+  database: gds
+  retmax: 500
   reldate: 99999  
   query: >
     (bronchopulmonary dysplasia OR BPD) AND
@@ -9,6 +11,8 @@ archive_search:
     (neonate OR newborn OR infant OR preterm)
 
 weekly_search:
+  database: gds
+  retmax: 500
   reldate: 730
   query: >
     (bronchopulmonary dysplasia OR BPD) AND
