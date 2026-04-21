@@ -24,8 +24,7 @@ def run_weekly_pipeline(config):
 
     new_ids = current_ids - seen_ids
     all_ids = seen_ids.union(current_ids)
-
-    append_to_weekly_report(current_ids)
+    
 
     print(f"Found {len(new_ids)} NEW datasets:\n")
 
