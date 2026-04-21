@@ -9,7 +9,10 @@ def load_seen_ids():
     with open(FILE_PATH, "r") as f:
         return set(line.strip() for line in f)
 
-def save_seen_ids(ids):
-    with open(FILE_PATH, "w") as f:
-        for i in ids:
+
+def save_seen_ids(new_ids):
+    os.makedirs(os.path.dirname(FILE_PATH), exist_ok=True)
+
+    with open(FILE_PATH, "a") as f: # append mode
+        for i in new_ids:
             f.write(f"{i}\n")
