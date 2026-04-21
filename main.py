@@ -8,7 +8,7 @@ from src.report_writer import append_to_weekly_report
 def run_archive_pipeline(config):
     print("📚 Building historical GEO archive...")
 
-    archive_ids = set(run_search(config["archive_search"]))
+    archive_ids = set(run_search(config["archive_search"], config["email"]))
 
     # Optional: print summary only (DO NOT mix with weekly report)
     print(f"Archive size: {len(archive_ids)} datasets collected\n")
@@ -19,7 +19,7 @@ def run_archive_pipeline(config):
 def run_weekly_pipeline(config):
     print("🔄 Running weekly GEO surveillance...")
 
-    current_ids = set(run_search(config["weekly_search"]))
+    current_ids = set(run_search(config["weekly_search"], config["email"]))
     seen_ids = load_seen_ids()
 
     new_ids = current_ids - seen_ids
