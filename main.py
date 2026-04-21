@@ -28,7 +28,7 @@ def main():
     # -----------------------
     # SAVE REPORT
     # -----------------------
-    append_to_weekly_report(new_ids)
+    append_to_weekly_report(current_ids)
     
 
     for gse in new_ids:
@@ -38,7 +38,7 @@ def main():
     # SAVE STATE
     # -----------------------
     all_ids = set(current_ids).union(seen_ids)
-    save_seen_ids(new_ids)
+    save_seen_ids(current_ids)
 
 if __name__ == "__main__":
     main()
