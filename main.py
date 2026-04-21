@@ -7,12 +7,13 @@ from src.report_writer import append_to_weekly_report
 
 def run_archive_pipeline(config):
     print("📚 Building historical GEO archive...")
+
     archive_ids = set(run_search(config["archive_search"]))
 
-    # Save full archive snapshot (optional separate file if you want)
-    append_to_weekly_report(archive_ids)
-
+    # Optional: print summary only (DO NOT mix with weekly report)
     print(f"Archive size: {len(archive_ids)} datasets collected\n")
+
+    return archive_ids
 
 
 def run_weekly_pipeline(config):
@@ -33,6 +34,8 @@ def run_weekly_pipeline(config):
 
     save_seen_ids(all_ids)
 
+    return current_ids
+
 
 def main():
     with open("configs/config.yaml", "r") as f:
@@ -41,8 +44,14 @@ def main():
     # -----------------------
     # RUN BOTH MODES
     # -----------------------
-    run_archive_pipeline(config)
-    run_weekly_pipeline(config)
+
+    archive_ids = run_archive_pipeline(config)
+    weekly_ids = run_weekly_pipeline(config)
+
+    # Optional sanity check
+    print("\n✔ Pipeline complete")
+    print(f"Archive total: {len(archive_ids)}")
+    print(f"Weekly snapshot: {len(weekly_ids)}")
 
 
 if __name__ == "__main__":
