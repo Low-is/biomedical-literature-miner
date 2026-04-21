@@ -7,16 +7,18 @@ def load_seen_ids():
         return set()
 
     with open(FILE_PATH, "r") as f:
-        return set(line.strip() for line in f)
+        return set(line.strip() for line in f if line.strip())
 
 
-def save_seen_ids(new_ids):
+def save_seen_ids(all_ids):
+    """
+    This file ALWAYS represents full history:
+    2014 → present (no duplicates ever)
+    """
+
     os.makedirs(os.path.dirname(FILE_PATH), exist_ok=True)
 
-    existing_ids = load_seen_ids()
-
-    with open(FILE_PATH, "a") as f:
-        for i in new_ids:
-            if i not in existing_ids:
-                f.write(f"{i}\n")
-                existing_ids.add(i)
+    # overwrite file with deduplicated full history
+    with open(FILE_PATH, "w") as f:
+        for i in sorted(all_ids):
+            f.write(f"{i}\n")
