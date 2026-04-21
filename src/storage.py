@@ -13,6 +13,10 @@ def load_seen_ids():
 def save_seen_ids(new_ids):
     os.makedirs(os.path.dirname(FILE_PATH), exist_ok=True)
 
-    with open(FILE_PATH, "a") as f: # append mode
+    existing_ids = load_seen_ids()
+
+    with open(FILE_PATH, "a") as f:
         for i in new_ids:
-            f.write(f"{i}\n")
+            if i not in existing_ids:
+                f.write(f"{i}\n")
+                existing_ids.add(i)
