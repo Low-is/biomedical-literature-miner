@@ -3,7 +3,6 @@
 import yaml
 import csv
 from src.search import run_search
-from src.storage import load_seen_ids, save_seen_ids
 
 OUTPUT_PATH = "outputs/weekly_report.csv"
 
@@ -15,34 +14,31 @@ def save_report(rows):
     with open(OUTPUT_PATH, "w", newline="") as f:
         writer = csv.writer(f)
         writer.writerow(["GSE_ID", "LINK", "STATUS"])
-
-        for r in rows:
-            writer.writerow(r)
+        writer.writerows(rows)
 
 
 def main():
     with open("configs/config.yaml", "r") as f:
         config = yaml.safe_load(f)
 
-    print("🔄 Running GEO search...")
-
-    # CURRENT 730-DAY RESULTS (your “new window”)
-    current_ids = set(run_search(config["weekly_search"], config["email"]))
-
-    # FULL HISTORICAL MEMORY
-    seen_ids = load_seen_ids()
-
-    # update archive (keeps everything ever seen)
-    all_ids = seen_ids.union(current_ids)
-    save_seen_ids(all_ids)
+    print("🔍 Running GEO searches...")
 
     # -----------------------
-    # BUILD LABELED REPORT
+    # GET ALL DATA (NO STATE, NO FILTERING)
+    # -----------------------
+    archive_ids = set(run_search(config["archive_search"], config["email"]))
+    recent_ids = set(run_search(config["weekly_search"], config["email"]))
+
+    # UNION = ALL STUDIES YOU FOUND
+    all_ids = archive_ids.union(recent_ids)
+
+    # -----------------------
+    # BUILD REPORT
     # -----------------------
     rows = []
 
     for gse in all_ids:
-        status = "new" if gse in current_ids else "old"
+        status = "new" if gse in recent_ids else "old"
 
         rows.append((
             gse,
@@ -52,17 +48,10 @@ def main():
 
     save_report(rows)
 
-    # -----------------------
-    # SUMMARY
-    # -----------------------
-    new_ids = current_ids - seen_ids
-
     print("\n✔ Pipeline complete")
-    print(f"Total studies tracked: {len(all_ids)}")
-    print(f"New studies this run: {len(new_ids)}")
-
-    for gse in new_ids:
-        print(f"https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc={gse}")
+    print(f"Total studies: {len(rows)}")
+    print(f"New (last 730 days): {len(recent_ids)}")
+    print(f"Old (archive-only): {len(archive_ids - recent_ids)}")
 
 
 if __name__ == "__main__":
