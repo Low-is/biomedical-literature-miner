@@ -2,7 +2,7 @@
 
 import yaml
 from src.search import run_search
-from src.storage import load_seen_ids, save_seen_ids
+from src.storage import load_seen_ids, save_seen_ids, save_weekly_report
 from src.report_writer import append_to_weekly_report
 
 def run_archive_pipeline(config):
