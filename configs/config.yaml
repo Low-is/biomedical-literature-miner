@@ -7,7 +7,7 @@ archive_search:
     (bronchopulmonary dysplasia OR BPD) AND
     (RNA-seq OR RNAseq OR "Expression profiling by array" OR "Expression profiling by high throughout sequencing" OR microarray OR "gene expression profiling") AND
     Homo sapiens[Organism] AND
-    (neonate OR newborn OR infant OR preterm)
+    (neonate OR newborn OR infant OR preterm OR premature OR "extremely low gestational age")
 
 weekly_search:
   database: gds
@@ -17,4 +17,4 @@ weekly_search:
     (bronchopulmonary dysplasia OR BPD) AND
     (RNA-seq OR RNAseq OR  "Expression profiling by array" OR "Expression profiling by high throughout sequencing" OR microarray OR "gene expression profiling") AND
     Homo sapiens[Organism] AND
-    (neonate OR newborn OR infant OR preterm)
+    (neonate OR newborn OR infant OR preterm OR premature OR "extremely low gestational age")
