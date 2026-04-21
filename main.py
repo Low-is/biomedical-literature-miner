@@ -38,7 +38,7 @@ def main():
     # SAVE STATE
     # -----------------------
     all_ids = set(current_ids).union(seen_ids)
-    save_seen_ids(all_ids)
+    save_seen_ids(new_ids)
 
 if __name__ == "__main__":
     main()
