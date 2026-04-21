@@ -1,13 +1,11 @@
 from Bio import Entrez
 
-def run_search(config):
+def run_search(search_cfg, email):
 
     # =========================
     # GLOBAL SETTINGS
     # =========================
-    Entrez.email = config["email"]
-    
-    search_cfg = config["search"]
+    Entrez.email = email
 
     # =========================
     # SEARCH GEO DATASETS
@@ -19,6 +17,7 @@ def run_search(config):
         datetype="pdat",
         reldate=search_cfg["reldate"]
     )
+
     record = Entrez.read(handle)
     handle.close()
 
@@ -34,9 +33,9 @@ def run_search(config):
         db=search_cfg["database"],
         id=",".join(gse_ids)
     )
+
     summaries = Entrez.read(handle)
     handle.close()
-
 
     # =========================
     # PARSE RESULTS
