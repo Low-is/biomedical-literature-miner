@@ -1,79 +1,65 @@
 # orchestrates workflow
 
 import yaml
+import csv
 from src.search import run_search
-from src.storage import load_seen_ids, save_seen_ids, save_weekly_report
+from src.storage import load_seen_ids, save_seen_ids
+
+OUTPUT_PATH = "outputs/weekly_report.csv"
 
 
-def run_archive_pipeline(config):
-    print("📚 Building historical GEO archive...")
+def save_report(rows):
+    import os
+    os.makedirs(os.path.dirname(OUTPUT_PATH), exist_ok=True)
 
-    archive_ids = set(run_search(config["archive_search"], config["email"]))
+    with open(OUTPUT_PATH, "w", newline="") as f:
+        writer = csv.writer(f)
+        writer.writerow(["GSE_ID", "LINK", "STATUS"])
 
-    print(f"Archive size: {len(archive_ids)} datasets collected\n")
-
-    return archive_ids
-
-
-def run_weekly_pipeline(config):
-    print("🔄 Running weekly GEO surveillance...")
-
-    current_ids = set(run_search(config["weekly_search"], config["email"]))
-    seen_ids = load_seen_ids()
-
-    new_ids = current_ids - seen_ids
-    old_ids = current_ids & seen_ids
-
-    all_ids = seen_ids.union(current_ids)
-
-    # -----------------------
-    # BUILD LABELED ROWS
-    # -----------------------
-    rows = []
-
-    for gse in new_ids:
-        rows.append((
-            gse,
-            f"https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc={gse}",
-            "new"
-        ))
-
-    for gse in old_ids:
-        rows.append((
-            gse,
-            f"https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc={gse}",
-            "existing"
-        ))
-
-    # -----------------------
-    # SAVE STATE + REPORT
-    # -----------------------
-    save_seen_ids(all_ids)
-    save_weekly_report(rows)
-
-    print(f"Found {len(new_ids)} NEW datasets:\n")
-
-    for gse in new_ids:
-        print(f"https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc={gse}")
-
-    return current_ids
+        for r in rows:
+            writer.writerow(r)
 
 
 def main():
     with open("configs/config.yaml", "r") as f:
         config = yaml.safe_load(f)
 
-    archive_ids = run_archive_pipeline(config)
-    weekly_ids = run_weekly_pipeline(config)
+    print("🔄 Running GEO search...")
 
-    final_ids = archive_ids.union(weekly_ids)
+    # CURRENT 730-DAY RESULTS (your “new window”)
+    current_ids = set(run_search(config["weekly_search"], config["email"]))
+
+    # FULL HISTORICAL MEMORY
     seen_ids = load_seen_ids()
 
-    new_ids = final_ids - seen_ids
+    # update archive (keeps everything ever seen)
+    all_ids = seen_ids.union(current_ids)
+    save_seen_ids(all_ids)
+
+    # -----------------------
+    # BUILD LABELED REPORT
+    # -----------------------
+    rows = []
+
+    for gse in all_ids:
+        status = "new" if gse in current_ids else "old"
+
+        rows.append((
+            gse,
+            f"https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc={gse}",
+            status
+        ))
+
+    save_report(rows)
+
+    # -----------------------
+    # SUMMARY
+    # -----------------------
+    new_ids = current_ids - seen_ids
 
     print("\n✔ Pipeline complete")
-    print(f"Total archive size: {len(final_ids)}")
-    print(f"New datasets this run: {len(new_ids)}")
+    print(f"Total studies tracked: {len(all_ids)}")
+    print(f"New studies this run: {len(new_ids)}")
 
     for gse in new_ids:
         print(f"https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc={gse}")
