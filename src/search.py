@@ -125,10 +125,10 @@ def run_search(search_cfg, email):
 
 
 
-#import yaml
+import yaml
 
-#with open("configs/config.yaml", "r") as f:
-    #config = yaml.safe_load(f)
+with open("configs/config.yaml", "r") as f:
+    config = yaml.safe_load(f)
 
-#archive_dna = run_search(config["dna_archive_search"], config["email"])
-#print(archive_dna)
+archive_dna = run_search(config["dna_archive_search"], config["email"])
+print(archive_dna)
