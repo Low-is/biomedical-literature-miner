@@ -26,7 +26,7 @@ def keep_platform(study, config):
         "10x",
         "cell ranger",
         "cellranger"
-    ]
+    ]]
 
     if any(k in text for k in exclude_keys):
         return False
