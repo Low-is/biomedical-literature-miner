@@ -8,53 +8,25 @@ def normalize(text):
     text = re.sub(r"[^\w\s]", " ", text)
     text = re.sub(r"\s+", " ", text)
     return text.strip()
-    
 
+
+# -------------------------------------------------
+# BIOLOGICAL FILTER ONLY (NO PLATFORM LOGIC HERE)
+# -------------------------------------------------
 def keep_study(study):
 
     text = normalize(
         study.get("title", "") + " " +
         study.get("summary", "") + " " +
-        study.get("type", "")
-    )
-    
-    type_text = normalize(study.get("type", ""))
-
-    full_text = normalize(
-    study["title"] + " " +
-    study["summary"] + " " +
-    study["overall_design"]
+        study.get("type", "") + " " +
+        study.get("overall_design", "")
     )
 
-exclude = [
-    "single cell",
-    "single-cell",
-    "scrna",
-    "snrna",
-    "single nucleus",
-    "10x",
-    "cell ranger",
-    "cellranger",
-    "spatial"
-]
-
-if any(term in full_text for term in exclude):
-    continue
-
-    if "expression profiling by array" not in type_text:
-    continue
-    
-    if "genome tiling array" in type_text:
-    continue
-
-    if "expression profiling by high throughput sequencing" not in type_text:
-    continue
-
-    # Disease
+    # Must be sepsis
     if "sepsis" not in text:
         return False
 
-    # Neonatal terms
+    # Must be neonatal
     neonatal_terms = [
         "neonate",
         "newborn",
@@ -67,46 +39,78 @@ if any(term in full_text for term in exclude):
     if not any(term in text for term in neonatal_terms):
         return False
 
-    # Exclude unwanted studies
-    exclude = [
-    "single cell",
-    "single-cell",
-    "scrna",
-    "snrna",
-    "single nucleus",
-    "10x",
-    "cell ranger",
-    "cellranger",
-    "spatial"
-]
+    # HARD EXCLUSIONS (this is where methylation + scRNA go out)
+    exclude_terms = [
+        "single cell",
+        "single-cell",
+        "scrna",
+        "snrna",
+        "single nucleus",
+        "10x",
+        "cell ranger",
+        "cellranger",
+        "spatial",
+        "methylation",
+        "bisulfite",
+        "genome tiling"
+    ]
 
-    if any(term in full_text for term in exclude):
-        continue
+    if any(term in text for term in exclude_terms):
+        return False
 
     return True
-    
 
+
+# -------------------------------------------------
+# PLATFORM FILTER (DNA vs RNA)
+# -------------------------------------------------
+def is_correct_platform(study, search_cfg):
+
+    text = normalize(
+        study.get("title", "") + " " +
+        study.get("summary", "") + " " +
+        study.get("type", "")
+    )
+
+    query = search_cfg["query"].lower()
+
+    # ---------------- DNA MICROARRAY ----------------
+    if "microarray" in query or "expression profiling by array" in query:
+
+        if "expression profiling by array" not in text:
+            return False
+
+        if "genome tiling array" in text:
+            return False
+
+        return True
+
+    # ---------------- RNA-seq ----------------
+    else:
+
+        if "expression profiling by high throughput sequencing" not in text:
+            return False
+
+        return True
+
+
+# -------------------------------------------------
+# MAIN SEARCH FUNCTION
+# -------------------------------------------------
 def run_search(search_cfg, email):
 
     Entrez.email = email
 
-    # -------------------------
-    # BUILD SEARCH PARAMETERS
-    # -------------------------
     esearch_params = {
         "db": search_cfg["database"],
         "term": search_cfg["query"],
         "retmax": search_cfg["retmax"],
     }
 
-    # ONLY ADD reldate IF IT EXISTS
     if "reldate" in search_cfg:
         esearch_params["reldate"] = search_cfg["reldate"]
         esearch_params["datetype"] = "pdat"
 
-    # -------------------------
-    # SEARCH GEO DATASETS
-    # -------------------------
     handle = Entrez.esearch(**esearch_params)
     record = Entrez.read(handle)
     handle.close()
@@ -116,9 +120,6 @@ def run_search(search_cfg, email):
     if not gse_ids:
         return []
 
-    # -------------------------
-    # FETCH SUMMARIES
-    # -------------------------
     handle = Entrez.esummary(
         db=search_cfg["database"],
         id=",".join(gse_ids)
@@ -127,11 +128,6 @@ def run_search(search_cfg, email):
     summaries = Entrez.read(handle)
     handle.close()
 
-    # -------------------------
-    # PARSE RESULTS
-    # -------------------------
-    
-    # Made changes 7-1-2026
     if isinstance(summaries, list):
         docs = summaries
     else:
@@ -139,64 +135,29 @@ def run_search(search_cfg, email):
 
     gse_list = []
 
-for doc in docs:
-    acc = doc.get("Accession", "") or doc.get("accession", "")
+    for doc in docs:
 
-    if not str(acc).startswith("GSE"):
-        continue
+        acc = doc.get("Accession", "") or doc.get("accession", "")
 
-    study = {
-        "gse": acc,
-        "title": doc.get("title", "") or doc.get("Title", ""),
-        "summary": doc.get("summary", "") or doc.get("Summary", ""),
-        "type": doc.get("type", "") or doc.get("Type", ""),
-        "overall_design": doc.get("overall_design", "") or doc.get("Overall_Design", "")
-    }
-
-    text = normalize(
-        study["title"] + " " +
-        study["summary"] + " " +
-        study["type"]
-    )
-
-    query = search_cfg["query"].lower()
-
-    if "expression profiling by array" in query or "microarray" in query:
-
-        dna_terms = [
-            "expression profiling by array",
-            "microarray",
-            "gene expression profiling",
-            "affymetrix",
-            "agilent"
-        ]
-
-        if not any(term in text for term in dna_terms):
+        if not str(acc).startswith("GSE"):
             continue
 
-    else:
+        study = {
+            "gse": acc,
+            "title": doc.get("title", "") or doc.get("Title", ""),
+            "summary": doc.get("summary", "") or doc.get("Summary", ""),
+            "type": doc.get("type", "") or doc.get("Type", ""),
+            "overall_design": doc.get("overall_design", "") or doc.get("Overall_Design", "")
+        }
 
-        rna_terms = [
-            "expression profiling by high throughput sequencing",
-            "rna seq",
-            "rna sequencing",
-            "rnaseq"
-        ]
-
-        if not any(term in text for term in rna_terms):
+        # STEP 1: PLATFORM FILTER
+        if not is_correct_platform(study, search_cfg):
             continue
 
-    if keep_study(study):
+        # STEP 2: BIOLOGICAL FILTER
+        if not keep_study(study):
+            continue
+
         gse_list.append(study)
 
-return gse_list
-
-        #gse_list.append({
-            #"gse": acc,
-            #"title": doc.get("title", "") or doc.get("Title", ""),
-            #"summary": doc.get("summary", "") or doc.get("Summary", ""),
-            #"type": doc.get("type", "") or doc.get("Type", ""),
-            #"overall_design": doc.get("overall_design", "") or doc.get("Overall_Design", "")
-        #})
-
-    #return gse_list
+    return gse_list
