@@ -45,7 +45,7 @@ def run_search(search_cfg, email):
     # PARSE RESULTS
     # -------------------------
     
-    # Made changes 6-25-2026
+    # Made changes 7-1-2026
     if isinstance(summaries, list):
         docs = summaries
     else:
