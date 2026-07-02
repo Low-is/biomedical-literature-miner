@@ -41,7 +41,7 @@ def is_correct_platform(study, search_cfg):
     if "microarray" in text or "expression profiling by array" in text:
         return True
         
-        if "methylation" in text or "genome tiling array" in text:
+        if "methylation" in text or "genome tiling" in text:
             return False
 
         return True
