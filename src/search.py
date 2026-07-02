@@ -38,10 +38,10 @@ def is_correct_platform(study, search_cfg):
     query = search_cfg["query"].lower()
 
     # ---------------- DNA MICROARRAY ----------------
-    if "microarray" in query or "expression profiling by array" in text:
+    if "microarray" in text or "expression profiling by array" in text:
         return True
         
-        if "genome tiling array" in text:
+        if "methylation" in text or "genome tiling array" in text:
             return False
 
         return True
