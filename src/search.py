@@ -38,11 +38,9 @@ def is_correct_platform(study, search_cfg):
     query = search_cfg["query"].lower()
 
     # ---------------- DNA MICROARRAY ----------------
-    if "microarray" in query or "expression profiling by array" in query:
-
-        if "expression profiling by array" not in text:
-            return False
-
+    if "microarray" in query or "expression profiling by array" in text:
+        return True
+        
         if "genome tiling array" in text:
             return False
 
@@ -51,7 +49,7 @@ def is_correct_platform(study, search_cfg):
     # ---------------- RNA-seq ----------------
     else:
 
-        if "expression profiling by high throughput sequencing" not in text:
+        if "other" in text:
             return False
 
         return True
