@@ -116,8 +116,8 @@ def run_search(search_cfg, email):
             #continue
 
         # STEP 2: BIOLOGICAL FILTER
-        #if not keep_study(study):
-            #continue
+        if not keep_study(study):
+            continue
 
         gse_list.append(study)
 
