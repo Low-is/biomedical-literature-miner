@@ -4,7 +4,7 @@ import os
 import re
 import yaml
 import csv
-from src.search import run_search
+from src.search import run_search, keep_study
 from src.storage import load_seen_ids, save_seen_ids
 
 ARCHIVE_PATH = "data/gse_ids.csv"
