@@ -16,7 +16,7 @@ REPORT_PATH = "outputs/weekly_report.csv"
 def keep_platform(study, config):
     #text = normalize(study.get("summary", "") + " " + study.get("type", ""))
     text = normalize(study.get("overall_design", ""))
-    exclude_keys = [k for k in config["exclude_keys"]] + [
+    exclude_keys = [k for k in [
         "bisulfite",
         "single cell",
         "single-cell transcriptome",
@@ -25,7 +25,7 @@ def keep_platform(study, config):
         "single nucleus",
         "10x",
         "cell ranger",
-        "cellranger",
+        "cellranger"
     ]
 
     if any(k in text for k in exclude_keys):
