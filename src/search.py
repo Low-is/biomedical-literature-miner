@@ -135,7 +135,7 @@ print(archive_dna)
 
 
 handle = Entrez.esummary(
-        db=search_cfg["database"],
+        db="gds",
         id=",".join(gse_ids)
     )
 
