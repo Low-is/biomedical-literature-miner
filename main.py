@@ -21,11 +21,11 @@ def normalize(text):
     return text.strip()
 
 
-def keep_study(study):
+#def keep_study(study):
     
-    title = normalize(study.get("title", "")) 
+    #title = normalize(study.get("title", "")) 
     
-    return "sepsis" in title
+    #return "sepsis" in title
 
 
 def keep_platform(study, config):
