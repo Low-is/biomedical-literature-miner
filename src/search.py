@@ -122,3 +122,7 @@ def run_search(search_cfg, email):
         gse_list.append(study)
 
     return gse_list
+
+
+
+archive_rna = run_search(config["rna_archive_search"], config["email"])
