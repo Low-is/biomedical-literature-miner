@@ -27,32 +27,32 @@ def keep_study(study):
 # -------------------------------------------------
 # PLATFORM FILTER (DNA vs RNA)
 # -------------------------------------------------
-def is_correct_platform(study, search_cfg):
+#def is_correct_platform(study, search_cfg):
 
-    text = normalize(
-        study.get("title", "") + " " +
-        study.get("summary", "") + " " +
-        study.get("type", "")
-    )
+    #text = normalize(
+        #study.get("title", "") + " " +
+        #study.get("summary", "") + " " +
+        #study.get("type", "")
+    #)
 
-    query = search_cfg["query"].lower()
+    #query = search_cfg["query"].lower()
 
     # ---------------- DNA MICROARRAY ----------------
-    if "genome-wide expression profiling" in text or "expression profiling by array" in text:
-        return True
+    #if "genome-wide expression profiling" in text or "expression profiling by array" in text:
+        #return True
         
-        if "methylation" in text or "genome tiling" in text:
-            return False
+        #if "methylation" in text or "genome tiling" in text:
+            #return False
 
-        return True
+        #return True
 
     # ---------------- RNA-seq ----------------
-    else:
+    #else:
 
-        if "other" in text:
-            return False
+        #if "other" in text:
+            #return False
 
-        return True
+        #return True
 
 
 # -------------------------------------------------
@@ -112,12 +112,12 @@ def run_search(search_cfg, email):
         }
 
         # STEP 1: PLATFORM FILTER
-        if not is_correct_platform(study, search_cfg):
-            continue
+        #if not is_correct_platform(study, search_cfg):
+            #continue
 
         # STEP 2: BIOLOGICAL FILTER
-        if not keep_study(study):
-            continue
+        #if not keep_study(study):
+            #continue
 
         gse_list.append(study)
 
