@@ -132,3 +132,12 @@ with open("configs/config.yaml", "r") as f:
 
 archive_dna = run_search(config["dna_archive_search"], config["email"])
 print(archive_dna)
+
+
+handle = Entrez.esummary(
+        db=search_cfg["database"],
+        id=",".join(gse_ids)
+    )
+
+summaries = Entrez.read(handle)
+handle.close()
