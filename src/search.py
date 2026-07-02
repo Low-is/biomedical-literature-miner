@@ -17,6 +17,38 @@ def keep_study(study):
         study.get("summary", "") + " " +
         study.get("type", "")
     )
+    
+    type_text = normalize(study.get("type", ""))
+
+    full_text = normalize(
+    study["title"] + " " +
+    study["summary"] + " " +
+    study["overall_design"]
+    )
+
+exclude = [
+    "single cell",
+    "single-cell",
+    "scrna",
+    "snrna",
+    "single nucleus",
+    "10x",
+    "cell ranger",
+    "cellranger",
+    "spatial"
+]
+
+if any(term in full_text for term in exclude):
+    continue
+
+    if "expression profiling by array" not in type_text:
+    continue
+    
+    if "genome tiling array" in type_text:
+    continue
+
+    if "expression profiling by high throughput sequencing" not in type_text:
+    continue
 
     # Disease
     if "sepsis" not in text:
@@ -36,23 +68,20 @@ def keep_study(study):
         return False
 
     # Exclude unwanted studies
-    exclude_terms = [
-        "methylation",
-        "bisulfite",
-        "single cell",
-        "single-cell",
-        "scrna",
-        "scrna seq",
-        "snrna",
-        "single nucleus",
-        "10x",
-        "cell ranger",
-        "cellranger",
-        "spatial",
-    ]
+    exclude = [
+    "single cell",
+    "single-cell",
+    "scrna",
+    "snrna",
+    "single nucleus",
+    "10x",
+    "cell ranger",
+    "cellranger",
+    "spatial"
+]
 
-    if any(term in text for term in exclude_terms):
-        return False
+    if any(term in full_text for term in exclude):
+        continue
 
     return True
     
