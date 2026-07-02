@@ -4,7 +4,7 @@ import os
 import re
 import yaml
 import csv
-from src.search import run_search, keep_study
+from src.search import run_search, keep_study, normalize
 from src.storage import load_seen_ids, save_seen_ids
 
 ARCHIVE_PATH = "data/gse_ids.csv"
@@ -13,14 +13,6 @@ REPORT_PATH = "outputs/weekly_report.csv"
 # -----------------------
 # FILTER RESULTS
 # -----------------------
-def normalize(text):
-    text = text.lower()
-    text = text.replace("-", " ")
-    text = re.sub(r"[^\w\s]", " ", text)
-    text = re.sub(r"\s+", " ", text)
-    return text.strip()
-
-
 #def keep_study(study):
     
     #title = normalize(study.get("title", "")) 
