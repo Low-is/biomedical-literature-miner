@@ -13,7 +13,7 @@ REPORT_PATH = "outputs/weekly_report.csv"
 # -----------------------
 # FILTER RESULTS
 # -----------------------
-def keep_platform(study, config):
+def keep_platform(study):
     #text = normalize(study.get("summary", "") + " " + study.get("type", ""))
     text = normalize(study.get("overall_design", ""))
     exclude_keys = [k for k in [
@@ -83,15 +83,15 @@ def main():
     #recent_dna  = [x for x in recent_dna if keep_study(x)]
 
     # Platform Filter
-    archive_dna = [x for x in archive_dna if keep_platform(x, config)]
-    recent_dna = [x for x in recent_dna if keep_platform(x, config)]
+    archive_dna = [x for x in archive_dna if keep_platform(x)]
+    recent_dna = [x for x in recent_dna if keep_platform(x)]
 
     #archive_rna = [x for x in archive_rna if keep_study(x)]
     #recent_rna  = [x for x in recent_rna if keep_study(x)]
 
     # Platform Filter
-    archive_rna = [x for x in archive_rna if keep_platform(x, config)]
-    recent_rna = [x for x in recent_rna if keep_platform(x, config)]
+    archive_rna = [x for x in archive_rna if keep_platform(x)]
+    recent_rna = [x for x in recent_rna if keep_platform(x)]
     
 
     # =========================================================
