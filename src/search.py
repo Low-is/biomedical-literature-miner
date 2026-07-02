@@ -131,4 +131,4 @@ with open("configs/config.yaml", "r") as f:
     config = yaml.safe_load(f)
 
 archive_rna = run_search(config["rna_archive_search"], config["email"])
-print(type(archive_rna))
+print(archive_rna["overall_design"])
