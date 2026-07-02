@@ -19,8 +19,8 @@ def keep_platform(study, config):
     exclude_keys = [k for k in config["exclude_keys"]] + [
         "bisulfite",
         "single cell",
+        "single-cell transcriptome",
         "scrna seq",
-        "sc rna seq",
         "snrna seq",
         "single nucleus",
         "10x",
