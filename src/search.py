@@ -16,49 +16,12 @@ def normalize(text):
 def keep_study(study):
 
     text = normalize(
-        study.get("title", "") + " " +
-        study.get("summary", "") + " " +
-        study.get("type", "") + " " +
-        study.get("overall_design", "")
+        study.get("title", "")
     )
 
     # Must be sepsis
-    if "sepsis" not in text:
-        return False
-
-    # Must be neonatal
-    neonatal_terms = [
-        "neonate",
-        "newborn",
-        "infant",
-        "preterm",
-        "premature",
-        "extremely low gestational age",
-    ]
-
-    if not any(term in text for term in neonatal_terms):
-        return False
-
-    # HARD EXCLUSIONS (this is where methylation + scRNA go out)
-    exclude_terms = [
-        "single cell",
-        "single-cell",
-        "scrna",
-        "snrna",
-        "single nucleus",
-        "10x",
-        "cell ranger",
-        "cellranger",
-        "spatial",
-        "methylation",
-        "bisulfite",
-        "genome tiling"
-    ]
-
-    if any(term in text for term in exclude_terms):
-        return False
-
-    return True
+    if "sepsis" in text:
+        return True
 
 
 # -------------------------------------------------
