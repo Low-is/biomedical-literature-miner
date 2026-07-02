@@ -138,58 +138,58 @@ def run_search(search_cfg, email):
         docs = summaries.get("DocumentSummarySet", {}).get("DocumentSummary", [])
 
     gse_list = []
-    
-    for doc in docs:
-        acc = doc.get("Accession", "") or doc.get("accession", "")
-        
-        if not str(acc).startswith("GSE"):
+
+for doc in docs:
+    acc = doc.get("Accession", "") or doc.get("accession", "")
+
+    if not str(acc).startswith("GSE"):
+        continue
+
+    study = {
+        "gse": acc,
+        "title": doc.get("title", "") or doc.get("Title", ""),
+        "summary": doc.get("summary", "") or doc.get("Summary", ""),
+        "type": doc.get("type", "") or doc.get("Type", ""),
+        "overall_design": doc.get("overall_design", "") or doc.get("Overall_Design", "")
+    }
+
+    text = normalize(
+        study["title"] + " " +
+        study["summary"] + " " +
+        study["type"]
+    )
+
+    query = search_cfg["query"].lower()
+
+    if "expression profiling by array" in query or "microarray" in query:
+
+        dna_terms = [
+            "expression profiling by array",
+            "microarray",
+            "gene expression profiling",
+            "affymetrix",
+            "agilent"
+        ]
+
+        if not any(term in text for term in dna_terms):
             continue
 
-        study = {
-            "gse": acc,
-            "title": doc.get("title", "") or doc.get("Title", ""),
-            "summary": doc.get("summary", "") or doc.get("Summary", ""),
-            "type": doc.get("type", "") or doc.get("Type", ""),
-            "overall_design": doc.get("overall_design", "") or doc.get("Overall_Design", "")
-        }
+    else:
 
-        text = normalize(
-            study.get("title", "") + " " +
-            study.get("summary", "") + " " +
-            study.get("type", "")
-        )
+        rna_terms = [
+            "expression profiling by high throughput sequencing",
+            "rna seq",
+            "rna sequencing",
+            "rnaseq"
+        ]
 
-        query = search_cfg["query"].lower()
+        if not any(term in text for term in rna_terms):
+            continue
 
-        if "expression profiling by array" in query or "microarray" in query:
+    if keep_study(study):
+        gse_list.append(study)
 
-            dna_terms = [
-                "expression profiling by array",
-                "microarray",
-                "gene expression profiling",
-                "affymetrix",
-                "agilent"
-            ]
-
-            if not any(term in text for term in dna_terms):
-                continue
-
-        else:
-
-            rna_terms = [
-                "expression profiling by high throughput sequencing",
-                "rna seq",
-                "rna sequencing",
-                "rnaseq"
-            ]
-
-            if not any(term in text for term in rna_terms):
-                continue
-
-        if keep_study(study):
-            gse_list.append(study)
-
-    return gse_list
+return gse_list
 
         #gse_list.append({
             #"gse": acc,
